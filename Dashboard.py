@@ -62,6 +62,9 @@ st.line_chart(sentiment_chart.set_index("Time"))
 st.markdown("### 🗞️ Latest Market Narrative")
 st.info("“Adani shares stabilize as the group counters short-seller claims. Volatility remains elevated. #Adani #StockMarket”")
 
-# Auto-refresh
+
+from streamlit_autorefresh import st_autorefresh
+
 st.markdown("⏱️ _Auto-refreshing every 60 seconds..._")
-st.experimental_rerun()
+st_autorefresh(interval=60 * 1000, key="data_refresh")
+
