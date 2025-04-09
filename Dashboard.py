@@ -12,7 +12,7 @@ st.title("💹 Real-Time Fintech Intelligence: Paytm")
 # ⚙️ Load sentiment model once
 @st.cache_resource
 def load_sentiment_model():
-    return pipeline("sentiment-analysis", model="distilbert/distilbert-base-uncased-finetuned-sst-2-english")
+    return pipeline("sentiment-analysis", model="distilbert/distilbert-base-uncased-finetuned-sst-2-english",revision="714eb0f")
 
 # 📈 Get 7-day stock data with quant metrics
 @st.cache_data(ttl=60)
@@ -71,3 +71,9 @@ st.info("“Paytm stock rebounds as digital transaction volume soars. Positive s
 # 🔄 Auto-refresh every 60 sec
 st.markdown("⏱️ _Auto-refreshing every 60 seconds..._")
 st_autorefresh(interval=60 * 1000, key="data_refresh")
+
+try:
+    sentiment_analyzer = load_sentiment_model()
+except Exception as e:
+    st.error("⚠️ Failed to load sentiment model.")
+    st.stop()
