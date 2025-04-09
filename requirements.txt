@@ -4,3 +4,4 @@ torch
 yfinance
 pandas
 streamlit-autorefresh
+ta
