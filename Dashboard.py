@@ -3,16 +3,18 @@ import pandas as pd
 import datetime
 import yfinance as yf
 from transformers import pipeline
+from streamlit_autorefresh import st_autorefresh
 
-# Page setup
-st.set_page_config(page_title="📊 Market Sentiment + Quant Dashboard", layout="wide")
-st.title("📈 Real-Time Market Intelligence Dashboard")
+# 🚀 Setup
+st.set_page_config(page_title="📊 Fintech Sentiment + Quant Dashboard", layout="wide")
+st.title("💹 Real-Time Fintech Intelligence: Paytm")
 
-# Cache models and data fetching
+# ⚙️ Load sentiment model once
 @st.cache_resource
 def load_sentiment_model():
     return pipeline("sentiment-analysis", model="distilbert/distilbert-base-uncased-finetuned-sst-2-english")
 
+# 📈 Get 7-day stock data with quant metrics
 @st.cache_data(ttl=60)
 def get_stock_data(ticker):
     stock = yf.Ticker(ticker)
@@ -22,49 +24,50 @@ def get_stock_data(ticker):
     df["Volatility"] = df["Close"].rolling(window=5).std()
     return df
 
-# Run sentiment
-def run_sentiment(text="Adani stock sentiment today"):
+# 🧠 Run sentiment on news headline or default
+def run_sentiment(text="Paytm sees rising investor interest amid digital payment growth."):
     return sentiment_analyzer(text)
 
-# Load model and fetch stock data
+# 🔧 Choose fintech company
+ticker = "PAYTM.NS"
+company_name = "Paytm"
+
+# 🔍 Load model and data
 sentiment_analyzer = load_sentiment_model()
-ticker = "ADANIENT.NS"
 df = get_stock_data(ticker)
 
-# Latest values
+# 🔢 Latest market stats
 latest_price = df["Close"].iloc[-1]
 ma20 = df["MA20"].iloc[-1]
 volatility = df["Volatility"].iloc[-1]
 
+# 📊 Run sentiment analysis
 sentiment_result = run_sentiment()
 sentiment_label = sentiment_result[0]['label']
 sentiment_score = sentiment_result[0]['score']
 
-# Top metrics
+# 📌 Dashboard Metrics
 col1, col2, col3 = st.columns(3)
 col1.metric("Current Price", f"₹{latest_price:.2f}")
 col2.metric("Sentiment", sentiment_label, f"{sentiment_score:.2%}")
-col3.metric("Volatility (std)", f"{volatility:.2f}")
+col3.metric("Volatility (σ)", f"{volatility:.2f}")
 
-# Quant Chart
-st.markdown("### 📉 Price & MA20")
+# 📉 Quant: Price + MA20
+st.markdown(f"### 📊 {company_name} Price with Moving Average (MA20)")
 st.line_chart(df[["Close", "MA20"]])
 
-# Sentiment Over Time (simulate here)
-st.markdown("### 🧠 NLP Sentiment Score Over Time")
+# 📈 Sentiment Timeline (simulated)
+st.markdown("### 🧠 Sentiment Trend")
 sentiment_chart = pd.DataFrame({
     "Time": pd.date_range(end=datetime.datetime.now(), periods=10, freq="min"),
-    "Sentiment Score": [0.32, 0.45, 0.5, 0.62, 0.58, 0.72, 0.75, 0.78, sentiment_score, sentiment_score]
+    "Sentiment Score": [0.35, 0.45, 0.52, 0.58, 0.63, 0.69, 0.71, 0.74, sentiment_score, sentiment_score]
 })
 st.line_chart(sentiment_chart.set_index("Time"))
 
-# Insights block
-st.markdown("### 🗞️ Latest Market Narrative")
-st.info("“Adani shares stabilize as the group counters short-seller claims. Volatility remains elevated. #Adani #StockMarket”")
+# 🗞️ News/Narrative
+st.markdown("### 🗞️ Market Narrative")
+st.info("“Paytm stock rebounds as digital transaction volume soars. Positive sentiment from retail investors continues. #Fintech #India”")
 
-
-from streamlit_autorefresh import st_autorefresh
-
+# 🔄 Auto-refresh every 60 sec
 st.markdown("⏱️ _Auto-refreshing every 60 seconds..._")
 st_autorefresh(interval=60 * 1000, key="data_refresh")
-
