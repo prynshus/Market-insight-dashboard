@@ -5,3 +5,5 @@ yfinance
 pandas
 streamlit-autorefresh
 ta
+sklearn
+numpy
